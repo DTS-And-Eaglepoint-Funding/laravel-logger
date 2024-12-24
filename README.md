@@ -39,7 +39,8 @@ Laravel logger is an activity event logger for your Laravel or Lumen application
 |Records activity timestamps|
 |Records activity description|
 |Records activity details (optional)|
-|Records activity user type with crawler detection.|
+|Records model related to the activity (optional)|
+|Records activity user type with crawler detection|
 |Records activity Method|
 |Records activity Route|
 |Records activity Ip Address|
@@ -171,6 +172,7 @@ LARAVEL_LOGGER_USER_MODEL=App\User
 LARAVEL_LOGGER_USER_ID_FIELD=id
 LARAVEL_LOGGER_DISABLE_ROUTES=false
 LARAVEL_LOGGER_PAGINATION_ENABLED=true
+LARAVEL_LOGGER_CURSOR_PAGINATION_ENABLED=false
 LARAVEL_LOGGER_PAGINATION_PER_PAGE=25
 LARAVEL_LOGGER_DATATABLES_ENABLED=true
 LARAVEL_LOGGER_ENABLE_SEARCH=true
@@ -233,7 +235,7 @@ To use the trait:
         use ActivityLogger;
     ```
 
-3. You can record the activity my calling the traits method:
+3. You can record the activity by calling the traits method:
     ```
         ActivityLogger::activity("Logging this activity.");
     ```
@@ -241,6 +243,11 @@ To use the trait:
     Or as bellow to include extended activity details:
     ```
         ActivityLogger::activity("Logging this activity.", "Additional activity details.");
+    ```
+
+   Or even including the model related to the activity:
+    ```
+        ActivityLogger::activity("Logging this activity.", "Additional activity details.", ["id" => 1, "model" => "App\Models\User"]);
     ```
 
 ### Routes
@@ -285,6 +292,10 @@ Route::group(['prefix' => 'activity', 'namespace' => 'jeremykenedy\LaravelLogger
 ### Search
 
 adding dynamic search fields (description , user, URL , method and ip address)
+
+### High Performance Paginator
+
+When dealing with millions activity records, default behavior of not paginate records or [Laravel's paginator](https://laravel.com/docs/pagination#paginating-eloquent-results) (enabled `LARAVEL_LOGGER_PAGINATION_ENABLED=true`) may lead to huge performance penalties. For that use case you may set `LARAVEL_LOGGER_CURSOR_PAGINATION_ENABLED=true` to enable [Laravel's Cursor Pagination](https://laravel.com/docs/pagination#cursor-pagination) feature. This will heavily improve Laravel Logger page loading time. If you choose to do so it's advisable to read [Cursor vs. Offset Pagination](https://laravel.com/docs/pagination#cursor-vs-offset-pagination) section on Laravel's documentation to get acquainted with Cursor Pagination limitations.
 
 ##### .env file
 add these configurations to your .env file to control the logging search
